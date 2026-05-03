@@ -1,0 +1,8 @@
+test\AnemicDAOWeaknessTest.class
+test\RepositoryFixedTest.class
+test\ValidationWeaknessTest.class
+test\CartStringWeaknessTest.class
+SRPViolationTest.class
+test\ValidationPipelineFixedTest.class
+test\CartItemFixedTest.class
+test\SRPFixedTest.class
