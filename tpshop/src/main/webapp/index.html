@@ -1,19 +1,424 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mini Shop – Choisir un produit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniShop — Select a Product</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --bg: #080c14;
+            --surface: #0f1624;
+            --card: #141d2e;
+            --border: #1e2d45;
+            --accent: #38bdf8;
+            --accent2: #818cf8;
+            --green: #34d399;
+            --text: #e2e8f0;
+            --muted: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background grid */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+
+        /* Glow orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px; height: 400px;
+            background: rgba(56,189,248,0.06);
+            top: -100px; left: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 350px; height: 350px;
+            background: rgba(129,140,248,0.06);
+            bottom: -80px; right: -80px;
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, -20px); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56,189,248,0.08);
+            border: 1px solid rgba(56,189,248,0.2);
+            border-radius: 100px;
+            padding: 6px 16px;
+            margin-bottom: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .logo-dot {
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .shop-title {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #e2e8f0 0%, #38bdf8 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .shop-subtitle {
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Card */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(56,189,248,0.4), transparent);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .select-wrapper {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .select-wrapper::after {
+            content: '⌄';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+
+        select {
+            width: 100%;
+            padding: 14px 40px 14px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            appearance: none;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(56,189,248,0.1);
+        }
+
+        select option {
+            background: var(--card);
+            color: var(--text);
+        }
+
+        /* Product preview cards */
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .product-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .product-card.selected {
+            border-color: var(--accent);
+            background: rgba(56,189,248,0.05);
+        }
+
+        .product-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 8px; right: 10px;
+            color: var(--green);
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .product-icon {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+
+        .product-name {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .product-id {
+            font-size: 0.65rem;
+            color: var(--muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Submit button */
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .btn-submit:hover::before { opacity: 1; }
+        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(56,189,248,0.3); }
+        .btn-submit:active { transform: translateY(0); }
+
+        .btn-submit span { position: relative; z-index: 1; }
+
+        /* Footer stats */
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 28px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: var(--muted);
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .divider {
+            width: 1px;
+            background: var(--border);
+            align-self: stretch;
+        }
+    </style>
 </head>
 <body>
-    <h1>Mini Shop – Choisir un produit</h1>
-    <form action="MiniShopServFull" method="POST">
-        <label>Choisir un produit :</label>
-        <select name="product">
-            <option value=""></option>
-            <option value="980001">laptop</option>
-            <option value="980005">phone</option>
-        </select>
-        <button type="submit">Envoyer</button>
-    </form>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="container">
+
+    <div class="header">
+        <div class="logo-badge">
+            <div class="logo-dot"></div>
+            Jakarta EE · GlassFish 7
+        </div>
+        <h1 class="shop-title">MiniShop</h1>
+        <p class="shop-subtitle">// select a product to add to cart</p>
+    </div>
+
+    <div class="card">
+        <form action="MiniShopServFull" method="POST">
+
+            <label class="form-label">Choose Product</label>
+
+            <!-- Quick select cards -->
+            <div class="products-grid">
+                <div class="product-card" onclick="selectProduct('980001', this)">
+                    <div class="product-icon">💻</div>
+                    <div class="product-name">Laptop</div>
+                    <div class="product-id">#980001</div>
+                </div>
+                <div class="product-card" onclick="selectProduct('980005', this)">
+                    <div class="product-icon">📱</div>
+                    <div class="product-name">Phone</div>
+                    <div class="product-id">#980005</div>
+                </div>
+            </div>
+
+            <div class="select-wrapper">
+                <select name="product" id="productSelect">
+                    <option value="">— select product —</option>
+                    <option value="980001">laptop · #980001</option>
+                    <option value="980005">phone · #980005</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <span>Add to Cart →</span>
+            </button>
+
+        </form>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat">
+            <div class="stat-num">7</div>
+            <div class="stat-label">Weaknesses Fixed</div>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+            <div class="stat-num">24</div>
+            <div class="stat-label">Tests Passing</div>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+            <div class="stat-num">4</div>
+            <div class="stat-label">Arch Styles</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function selectProduct(id, card) {
+        document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        document.getElementById('productSelect').value = id;
+    }
+
+    // Sync card selection with select box
+    document.getElementById('productSelect').addEventListener('change', function() {
+        document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+        const val = this.value;
+        if (val === '980001') document.querySelectorAll('.product-card')[0].classList.add('selected');
+        if (val === '980005') document.querySelectorAll('.product-card')[1].classList.add('selected');
+    });
+</script>
+
 </body>
 </html>
